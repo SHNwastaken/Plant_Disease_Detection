@@ -10,7 +10,7 @@ if torch.cuda.is_available():
     print(f"Using GPU: {torch.cuda.get_device_name()}")
 
 # Load the plant leaf detection model
-model = YOLO('leaf_detection_model.pt')  # Add .to('cuda') to move model to GPU
+model = YOLO('leaf_detection_model.pt')  # add path to model here
 model.to('cuda' if torch.cuda.is_available() else 'cpu')
 # Set model parameters
 model.overrides['conf'] = 0.25  # NMS confidence threshold
