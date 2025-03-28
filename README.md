@@ -43,21 +43,8 @@ An advanced AI-powered system for automated plant leaf disease detection using c
 - Real-time disease detection
 - Results visualization and statistics
 
-## 📊 Supported Plant Types
-- Apple
-- Blueberry
-- Cherry
-- Corn
-- Grape
-- Orange
-- Peach
-- Pepper
-- Potato
-- Raspberry
-- Soybean
-- Squash
-- Strawberry
-- Tomato
+## 🌈 Supported Plant Types
+🍎 Apple | 🫐 Blueberry | 🍒 Cherry | 🌽 Corn | 🍇 Grape | 🍊 Orange | 🍑 Peach | 🫑 Pepper | 🥔 Potato | 🍇 Raspberry | 🌱 Soybean | 🥒 Squash | 🍓 Strawberry | 🍅 Tomato
 
 ## 🔧 Setup Requirements
 - Python 3.8+
