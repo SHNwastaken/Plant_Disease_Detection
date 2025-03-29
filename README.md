@@ -7,10 +7,10 @@
 
 This project implements a real-time plant disease detection system using computer vision. It leverages a two-stage approach:
 
-1.  **Leaf Detection:** A YOLO (You Only Look Once) model identifies the location of plant leaves within an input image or video stream.
-2.  **Disease Classification:** A custom Convolutional Neural Network (CNN) analyzes the detected leaf regions to classify the specific plant disease (or determine if the leaf is healthy) from a set of 38 possible classes.
+1.  **Leaf Detection:** A YOLO (You Only Look Once) model (`leaf_detection_model.pt`) identifies the location of plant leaves within an input image or video stream.
+2.  **Disease Classification:** A custom Convolutional Neural Network (CNN) (`plant_disease_model.pth`) analyzes the detected leaf regions to classify the specific plant disease (or determine if the leaf is healthy) from a set of 38 possible classes.
 
-The system is designed to work with input from an ESP32-CAM module, providing a practical solution for monitoring plant health directly in the field or greenhouse. It offers both a command-line interface with OpenCV visualization and an interactive web-based GUI built with Streamlit.
+The system is designed to work with input from an ESP32-CAM module, providing a practical solution for monitoring plant health directly in the field or greenhouse. It offers both a command-line interface with OpenCV visualization (`integrated_detection.py`) and an interactive web-based GUI built with Streamlit (`final_gui.py`).
 
 ## ✨ Features
 
@@ -25,14 +25,14 @@ The system is designed to work with input from an ESP32-CAM module, providing a 
 *   **OpenCV Interface (`integrated_detection.py`):** Offers a command-line alternative for running the integrated detection pipeline and visualizing results in a standard OpenCV window.
 *   **Standalone Leaf Detection (`leaf_detection_v1.py`):** Script dedicated solely to testing and visualizing the YOLO leaf detection model.
 *   **Standalone Disease Prediction (`disease_detection_v2.py`):** Contains the CNN model definition and basic functionality to predict disease from a single image file.
-*   **Result Logging:** Saves detection events (timestamp, plant type, condition, confidence) to a CSV file (`results/detection_results.csv`) for later analysis (implemented in `final_gui.py`).
+*   **Result Logging:** Saves detection events (timestamp, plant type, condition, confidence) to a CSV file (`results/detection_results.csv`) via the Streamlit interface.
 *   **GPU Acceleration:** Supports CUDA acceleration via PyTorch and Ultralytics if a compatible NVIDIA GPU is available, significantly speeding up inference.
 
 ## ⚙️ Technology Stack
 
 *   **Programming Language:** Python 3.8+
 *   **Deep Learning Framework:** PyTorch
-*   **Object Detection:** Ultralytics YOLO (likely YOLOv8 based on the `.pt` extension and usage)
+*   **Object Detection:** Ultralytics YOLO (using `leaf_detection_model.pt`)
 *   **Web Framework (GUI):** Streamlit
 *   **Computer Vision:** OpenCV (cv2)
 *   **Image Handling:** PIL (Pillow)
@@ -48,14 +48,15 @@ The system is designed to work with input from an ESP32-CAM module, providing a 
 The core workflow involves these steps:
 
 1.  **Image Acquisition:** An image frame is captured, either from a local file (in `disease_detection_v2.py`) or fetched from the ESP32-CAM URL (`final_gui.py`, `integrated_detection.py`, `leaf_detection_v1.py`).
-2.  **Leaf Detection (YOLO):** The captured image is passed to the YOLO model (`leaf_detection_model.pt`). The model outputs bounding boxes coordinates and confidence scores for detected leaves.
+2.  **Leaf Detection (YOLO):** The captured image is passed to the `leaf_detection_model.pt`. The model outputs bounding boxes coordinates and confidence scores for detected leaves.
 3.  **Leaf Cropping:** For each detected leaf exceeding a confidence threshold, the corresponding region (bounding box) is cropped from the original image.
-4.  **Disease Classification (CNN):** The cropped leaf image is preprocessed (resized, converted to tensor) and fed into the custom CNN (`plant_disease_model.pth`).
+4.  **Disease Classification (CNN):** The cropped leaf image is preprocessed (resized, converted to tensor) and fed into the `plant_disease_model.pth`.
 5.  **Prediction Output:** The CNN outputs probabilities for each of the 38 disease classes. The class with the highest probability is selected as the prediction.
 6.  **Visualization & Logging:**
     *   Bounding boxes, detected leaf confidence, and predicted disease labels are drawn onto the original image.
     *   The annotated image is displayed either in the Streamlit interface or an OpenCV window.
     *   Detection results (timestamp, plant, condition, confidence) are optionally logged to a CSV file (in `final_gui.py`).
+
 
 ## 🔧 Setup and Installation
 
@@ -81,43 +82,26 @@ The core workflow involves these steps:
     ```
 
 4.  **Install Dependencies:**
-    *   First, create a `requirements.txt` file with the necessary libraries. Based on the imports, it should include:
-        ```txt
-        torch
-        torchvision
-        torchaudio # Often needed with torchvision
-        ultralytics
-        opencv-python-headless # Or opencv-python if you need full GUI features beyond basic display
-        streamlit
-        pandas
-        requests
-        Pillow # PIL is part of Pillow
-        numpy
-        ```
+    *   Ensure the `requirements.txt` file provided in the repository is up-to-date. Based on the code, it should contain libraries like: `torch`, `torchvision`, `ultralytics`, `opencv-python-headless`, `streamlit`, `pandas`, `requests`, `Pillow`, `numpy`.
     *   Install the requirements:
         ```bash
         pip install -r requirements.txt
         ```
-        *(Note: Installing PyTorch might require specific commands depending on your OS and CUDA version. Refer to the [official PyTorch website](https://pytorch.org/get-started/locally/) for the correct command.)*
+        *(Note: Installing PyTorch might require specific commands depending on your OS and CUDA version. Refer to the [official PyTorch website](https://pytorch.org/get-started/locally/) for the correct command if you encounter issues.)*
 
-5.  **Download Model Files:**
-    *   Obtain the `leaf_detection_model.pt` (YOLO) and `plant_disease_model.pth` (CNN) files.
-    *   Place these files in the root directory of the project alongside the Python scripts.
-    *   *(Specify here where users can download these models - e.g., provide download links, mention they need to train them, or include them in the repo if small enough)*
+5.  **Ensure Model Files are Present:**
+    *   The `leaf_detection_model.pt` (YOLO) and `plant_disease_model.pth` (CNN) files should be in the root directory as shown in the structure. If you cloned the repository, they should already be there.
 
 6.  **Configure ESP32-CAM URL:**
     *   Find the IP address of your ESP32-CAM module on your local network.
-    *   Open the following files and update the `esp32_cam_url` variable with your camera's capture URL (usually `http://<IP_ADDRESS>/capture` or `/cam.jpg` or similar depending on firmware):
-        *   `final_gui.py`
-        *   `integrated_detection.py`
-        *   `leaf_detection_v1.py`
+    *   Open the relevant Python files (`final_gui.py`, `integrated_detection.py`, `leaf_detection_v1.py`) and update the `esp32_cam_url` variable with your camera's capture URL (e.g., `http://<IP_ADDRESS>/capture`).
     *   **Example:** `esp32_cam_url = "http://192.168.1.100/capture"`
 
 ## ▶️ Usage
 
-Make sure your virtual environment is activated (`source venv/bin/activate` or `.\venv\Scripts\activate`) and you are in the project's root directory. Ensure the ESP32-CAM is powered on and connected to the same network.
+Make sure your virtual environment is activated (`source venv/bin/activate` or `.\venv\Scripts\activate`) and you are in the project's root directory. Ensure the ESP32-CAM is powered on and connected to the same network if you intend to use it.
 
-1.  **Run the Streamlit Web Interface:**
+1.  **Run the Streamlit Web Interface (Recommended):**
     *   Provides the most user-friendly experience.
     ```bash
     streamlit run final_gui.py
@@ -126,7 +110,7 @@ Make sure your virtual environment is activated (`source venv/bin/activate` or `
     *   Use the sidebar controls to enter the ESP32-CAM URL, adjust confidence, start/stop the stream, and view results.
 
 2.  **Run the Integrated Detection with OpenCV:**
-    *   Useful for testing or if a web interface is not needed.
+    *   Useful for testing or if a web interface is not needed. Displays results in a desktop window.
     ```bash
     python integrated_detection.py
     ```
@@ -135,7 +119,7 @@ Make sure your virtual environment is activated (`source venv/bin/activate` or `
     *   Detection details will be printed to the console.
 
 3.  **Run Standalone Leaf Detection (YOLO Only):**
-    *   For testing the leaf detection model specifically.
+    *   For testing the `leaf_detection_model.pt` specifically.
     ```bash
     python leaf_detection_v1.py
     ```
@@ -144,7 +128,7 @@ Make sure your virtual environment is activated (`source venv/bin/activate` or `
 
 4.  **Run Basic Disease Prediction on Static Images:**
     *   Uses the `disease_detection_v2.py` script for classifying *existing* image files.
-    *   Make sure the sample images (`applerust.png`, `healthy.jpg`, etc.) exist in the same directory or provide correct paths.
+    *   Modify the `test_images` list inside the script if needed.
     ```bash
     python disease_detection_v2.py
     ```
@@ -153,7 +137,7 @@ Make sure your virtual environment is activated (`source venv/bin/activate` or `
 ## 🧠 Models
 
 1.  **Leaf Detection Model (`leaf_detection_model.pt`):**
-    *   **Type:** YOLO (likely YOLOv8) Object Detection Model.
+    *   **Type:** YOLO (Ultralytics format) Object Detection Model.
     *   **Purpose:** Detects the location (bounding boxes) of plant leaves in an image.
     *   **Input:** Image (BGR format expected by OpenCV/Ultralytics).
     *   **Output:** List of detected bounding boxes (coordinates), confidence scores, and class labels (presumably just 'leaf').
@@ -202,5 +186,10 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 5.  Open a Pull Request.
 
 Please ensure your code follows standard Python practices and includes appropriate documentation or comments.
+
+## 🙏 Acknowledgements
+
+*   https://www.kaggle.com/datasets/vipoooool/new-plant-diseases-dataset
+
 
 
