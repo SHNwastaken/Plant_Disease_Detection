@@ -19,7 +19,7 @@ model.overrides['agnostic_nms'] = False  # NMS class-agnostic
 model.overrides['max_det'] = 1000  # maximum number of detections per image
 
 # ESP32-CAM URL
-esp32_cam_url = "http://192.168.108.41/capture"
+esp32_cam_url = "http://192.168.147.104/capture"
 
 def fetch_image_from_esp32():
     """Fetch an image from the ESP32-CAM server."""
